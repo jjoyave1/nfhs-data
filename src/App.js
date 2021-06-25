@@ -2,7 +2,7 @@ import './App.css';
 
 import * as React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { CircularProgress, InputLabel, MenuItem, Select } from '@material-ui/core';
+import { CircularProgress, InputLabel, MenuItem, Select, TextField } from '@material-ui/core';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -17,12 +17,13 @@ class EventTable extends React.Component {
 		super(props);
 		this.state = {
 			isLoaded: false,
-			items: []
+			items: [],
+			association: '18bad24aaa'
 		}
 	}
 
 	componentDidMount() {
-		this.loadData();
+		this.loadData(this.state.association);
 	}
 
 	loadData() {
@@ -71,18 +72,71 @@ class EventTable extends React.Component {
 	}
 
 	render() {
-		const classes = makeStyles({
+		const classes = makeStyles(theme =>({
 			table: {
 				minWidth: 650,
 			},
-		});
+			dateField: {
+				marginLeft: theme.spacing(1),
+				marginRight: theme.spacing(1),
+				width: 200,
+			},
+		}));
 
 		const { isLoaded, items } = this.state;
 
 		let rows = items;
+		let assoc = '';
+
+		function handleAssociationChange(e) {
+			console.log('assoc');
+			console.log(e.target.value);
+		}
+
+		function handleStartDateChange(e) {
+			console.log('Start Date');
+			console.log(e.target.value);
+		}
+
+		function handleEndDateChange(e) {
+			console.log('End Date');
+			console.log(e.target.value);
+		}
+
 		return isLoaded ? (
-			<div>
-				<TableContainer component={Paper}>
+			<div style={{ width: '100%' }}>
+				<InputLabel id="demo-simple-select-label">State Association</InputLabel>
+				<Select
+					labelId="demo-simple-select-label"
+					id="demo-simple-select"
+					value={assoc}
+					onChange={handleAssociationChange}>
+					<MenuItem value='18bad24aaa'>GHSA</MenuItem>
+					<MenuItem value='542bc38f95'>THSA</MenuItem>
+				</Select>
+				<TextField
+					id="startDate"
+					className={classes.dateField}
+					display="flex"
+					label="Start Date"
+					onChange={handleStartDateChange}
+					type="date"
+					InputLabelProps={{
+						shrink: true
+					}}
+				/>
+				<TextField
+					id="endDate"
+					className={classes.dateField}
+					display="flex"
+					label="End Date"
+					onChange={handleEndDateChange}
+					type="date"
+					InputLabelProps={{
+						shrink: true
+					}}
+				/>
+				<TableContainer component={Paper} display="flex">
 					<Table className={classes.table} aria-label="simple table">
 					<TableHead>
 						<TableRow>
