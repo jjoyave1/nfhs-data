@@ -1,7 +1,6 @@
 import './App.css';
 
 import * as React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import { CircularProgress, InputLabel, MenuItem, Select, TextField } from '@material-ui/core';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -18,7 +17,9 @@ class EventTable extends React.Component {
 		this.state = {
 			isLoaded: false,
 			items: [],
-			association: '18bad24aaa'
+			association: '18bad24aaa',
+			startDate: undefined,
+			endDate: undefined
 		}
 		this._handleAssociationChange = this._handleAssociationChange.bind(this);
 		this._handleStartDateChange = this._handleStartDateChange.bind(this);
@@ -26,11 +27,15 @@ class EventTable extends React.Component {
 	}
 
 	componentDidMount() {
-		this.loadData(this.state.association);
+		this.loadData();
 	}
 
-	componentDidUpdate(props, state, snapshot) {
-		this.loadData();
+	componentDidUpdate(previousProps, previousState) {
+		if (previousState.startDate !== this.state.startDate ||
+			previousState.endDate !== this.state.endDate ||
+			previousState.association !== this.state.association) {	
+				this.loadData();
+			}
 	}
 
 	_handleAssociationChange(e) {
@@ -44,18 +49,43 @@ class EventTable extends React.Component {
 	}
 
 	_handleStartDateChange(e) {
-		console.log('Start Date');
-		console.log(e.target.value);
+		const startDate = e.target.value;
+		this.setState(state => {
+			return {
+				...state,
+				startDate: startDate
+			}
+		});
 	}
 
 	_handleEndDateChange(e) {
-		console.log('End Date');
-		console.log(e.target.value);
+		const endDate = e.target.value;
+		this.setState(state => {
+			return {
+				...state,
+				endDate: endDate
+			}
+		});
 	}
 
 	loadData() {
 		const key = this.state.association;
-		const API_URL = `https://challenge.nfhsnetwork.com/v2/search/events/upcoming?state_association_key=${key}&amp;card=true&amp;size=50&amp;start=0`;
+		let API_URL = `https://challenge.nfhsnetwork.com/v2/search/events/upcoming?`
+			API_URL += `state_association_key=${key}&amp;`
+			API_URL += `card=true&amp;`
+			API_URL += `size=500&amp;`
+			API_URL += `start=0`;
+
+		if (this.state.startDate) {
+			let startDate = new Date(this.state.startDate).toISOString();
+			API_URL += `&amp;from=${startDate}`;
+		}
+
+		if (this.state.endDate) {
+			let endDate = new Date(this.state.endDate).toISOString();
+			API_URL += `&amp;to=${endDate}`;
+		}
+
 
 		fetch(API_URL)
 			.then((res) => res.json())
@@ -98,44 +128,46 @@ class EventTable extends React.Component {
 
 		return isLoaded ? (
 			<div style={{ width: '100%' }}>
-				<div>
-					<InputLabel style={{
-							width: '200px'
-						}}>
-							State Association
-					</InputLabel>
+				<div style={{ display: 'flex' }}>
+					<div>
+						<InputLabel style={{
+								width: '200px'
+							}}>
+								State Association
+						</InputLabel>
 
-					<Select
-						id="association"
-						value={this.state.association}
-						onChange={this._handleAssociationChange}
-						style={{
-							width: '200px'
-						}}>
-						<MenuItem value='18bad24aaa'>GHSA</MenuItem>
-						<MenuItem value='542bc38f95'>THSA</MenuItem>
-					</Select>
+						<Select
+							id="association"
+							value={this.state.association}
+							onChange={this._handleAssociationChange}
+							style={{
+								width: '200px'
+							}}>
+							<MenuItem value='18bad24aaa'>GHSA</MenuItem>
+							<MenuItem value='542bc38f95'>THSA</MenuItem>
+						</Select>
+					</div>
+					<TextField
+						id="startDate"
+						display="flex"
+						label="Start Date"
+						onChange={this._handleStartDateChange}
+						type="date"
+						InputLabelProps={{
+							shrink: true
+						}}
+					/>
+					<TextField
+						id="endDate"
+						display="flex"
+						label="End Date"
+						onChange={this._handleEndDateChange}
+						type="date"
+						InputLabelProps={{
+							shrink: true
+						}}
+					/>
 				</div>
-				<TextField
-					id="startDate"
-					display="flex"
-					label="Start Date"
-					onChange={this._handleStartDateChange}
-					type="date"
-					InputLabelProps={{
-						shrink: true
-					}}
-				/>
-				<TextField
-					id="endDate"
-					display="flex"
-					label="End Date"
-					onChange={this._handleEndDateChange}
-					type="date"
-					InputLabelProps={{
-						shrink: true
-					}}
-				/>
 				<TableContainer component={Paper} display="flex">
 					<Table aria-label="simple table">
 					<TableHead>
