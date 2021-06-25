@@ -26,24 +26,16 @@ class EventTable extends React.Component {
 		this.loadData(this.state.association);
 	}
 
-	loadData() {
-		const API_URL1 = 'https://challenge.nfhsnetwork.com/v2/search/events/upcoming?state_association_key=18bad24aaa&amp;card=true&amp;size=50&amp;start=0';
-		const API_URL2 = 'https://challenge.nfhsnetwork.com/v2/search/events/upcoming?state_association_key=542bc38f95&amp;card=true&amp;size=50&amp;start=0';
+	loadData(key) {
+		const API_URL = `https://challenge.nfhsnetwork.com/v2/search/events/upcoming?state_association_key=${key}&amp;card=true&amp;size=50&amp;start=0`;
 
-		fetch(API_URL1)
-			.then((res1) => res1.json())
-			.then((result1 => {
-				let rawData = result1.items;
-
-				fetch(API_URL2)
-					.then((res2) => res2.json())
-					.then(result2 => {
-						rawData = rawData.concat(result2.items);
-						this.setState({
-							isLoaded: true,
-							items: extractData(rawData)
-						})
-					});
+		fetch(API_URL)
+			.then((res) => res.json())
+			.then((result => {
+				this.setState({
+					isLoaded: true,
+					items: extractData(result.items)
+				})
 			}));
 
 		function extractData(events) {
