@@ -20,13 +20,41 @@ class EventTable extends React.Component {
 			items: [],
 			association: '18bad24aaa'
 		}
+		this._handleAssociationChange = this._handleAssociationChange.bind(this);
+		this._handleStartDateChange = this._handleStartDateChange.bind(this);
+		this._handleEndDateChange = this._handleEndDateChange.bind(this);
 	}
 
 	componentDidMount() {
 		this.loadData(this.state.association);
 	}
 
-	loadData(key) {
+	componentDidUpdate(props, state, snapshot) {
+		this.loadData();
+	}
+
+	_handleAssociationChange(e) {
+		const association = e.target.value;
+		this.setState(state => {
+			return {
+				...state,
+				association: association
+			}
+		});
+	}
+
+	_handleStartDateChange(e) {
+		console.log('Start Date');
+		console.log(e.target.value);
+	}
+
+	_handleEndDateChange(e) {
+		console.log('End Date');
+		console.log(e.target.value);
+	}
+
+	loadData() {
+		const key = this.state.association;
 		const API_URL = `https://challenge.nfhsnetwork.com/v2/search/events/upcoming?state_association_key=${key}&amp;card=true&amp;size=50&amp;start=0`;
 
 		fetch(API_URL)
@@ -40,7 +68,7 @@ class EventTable extends React.Component {
 
 		function extractData(events) {
 			events = events || [];
-			return events.map(e => {
+			return [].concat(events.map(e => {
 				const isSportEvent = e.level && e.sport;
 
 				let subheadline = '';
@@ -59,59 +87,40 @@ class EventTable extends React.Component {
 					subheadline: subheadline,
 					date: e.local_start_time
 				}
-			});
+			}));
 		}
 	}
 
 	render() {
-		const classes = makeStyles(theme =>({
-			table: {
-				minWidth: 650,
-			},
-			dateField: {
-				marginLeft: theme.spacing(1),
-				marginRight: theme.spacing(1),
-				width: 200,
-			},
-		}));
-
 		const { isLoaded, items } = this.state;
 
 		let rows = items;
-		let assoc = '';
-
-		function handleAssociationChange(e) {
-			console.log('assoc');
-			console.log(e.target.value);
-		}
-
-		function handleStartDateChange(e) {
-			console.log('Start Date');
-			console.log(e.target.value);
-		}
-
-		function handleEndDateChange(e) {
-			console.log('End Date');
-			console.log(e.target.value);
-		}
 
 		return isLoaded ? (
 			<div style={{ width: '100%' }}>
-				<InputLabel id="demo-simple-select-label">State Association</InputLabel>
-				<Select
-					labelId="demo-simple-select-label"
-					id="demo-simple-select"
-					value={assoc}
-					onChange={handleAssociationChange}>
-					<MenuItem value='18bad24aaa'>GHSA</MenuItem>
-					<MenuItem value='542bc38f95'>THSA</MenuItem>
-				</Select>
+				<div>
+					<InputLabel style={{
+							width: '200px'
+						}}>
+							State Association
+					</InputLabel>
+
+					<Select
+						id="association"
+						value={this.state.association}
+						onChange={this._handleAssociationChange}
+						style={{
+							width: '200px'
+						}}>
+						<MenuItem value='18bad24aaa'>GHSA</MenuItem>
+						<MenuItem value='542bc38f95'>THSA</MenuItem>
+					</Select>
+				</div>
 				<TextField
 					id="startDate"
-					className={classes.dateField}
 					display="flex"
 					label="Start Date"
-					onChange={handleStartDateChange}
+					onChange={this._handleStartDateChange}
 					type="date"
 					InputLabelProps={{
 						shrink: true
@@ -119,17 +128,16 @@ class EventTable extends React.Component {
 				/>
 				<TextField
 					id="endDate"
-					className={classes.dateField}
 					display="flex"
 					label="End Date"
-					onChange={handleEndDateChange}
+					onChange={this._handleEndDateChange}
 					type="date"
 					InputLabelProps={{
 						shrink: true
 					}}
 				/>
 				<TableContainer component={Paper} display="flex">
-					<Table className={classes.table} aria-label="simple table">
+					<Table aria-label="simple table">
 					<TableHead>
 						<TableRow>
 							<TableCell>Key</TableCell>
