@@ -140,7 +140,8 @@ class EventTable extends React.Component {
 				}}>
 
 					<InputLabel style={{
-							width: '200px'
+							width: '200px',
+							fontSize: '12px'
 						}}>
 							State Association
 					</InputLabel>
