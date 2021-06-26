@@ -10,6 +10,8 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 
+const DEFAULT_ASSOCIATION = '18bad24aaa';
+
 class EventTable extends React.Component {
 
 	constructor(props) {
@@ -17,7 +19,7 @@ class EventTable extends React.Component {
 		this.state = {
 			isLoaded: false,
 			items: [],
-			association: '18bad24aaa',
+			association: DEFAULT_ASSOCIATION,
 			startDate: undefined,
 			endDate: undefined
 		}
@@ -211,7 +213,18 @@ class EventTable extends React.Component {
 					</TableContainer>
 				</div>
 			</div>
-			) : ( <CircularProgress />)
+			) : (
+			<div style={{
+				width: '100%',
+				display: 'flex',
+				flexDirection: 'column',
+				minHeight: '700px',
+				justifyContent: 'center',
+				alignItems: 'center'
+			}}>
+				<CircularProgress />
+			</div>
+			)
 	}
 }
 
