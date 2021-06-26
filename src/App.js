@@ -182,7 +182,8 @@ class EventTable extends React.Component {
 					/>
 				</div>
 				<div style={{
-					padding: '4px'
+					padding: '4px',
+					minHeight: '600px'
 				}}>
 					<TableContainer component={Paper} display="flex">
 						<Table aria-label="simple table">
