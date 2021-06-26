@@ -1,9 +1,8 @@
-
 To run the project:
 
-### `cd nfhs-data`
-### `npm install`
-### `npm start`
+#### `cd nfhs-data`
+#### `git pull && npm install`
+#### `npm start`
 
 Runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
