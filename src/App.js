@@ -71,19 +71,19 @@ class EventTable extends React.Component {
 	loadData() {
 		const key = this.state.association;
 		let API_URL = `https://challenge.nfhsnetwork.com/v2/search/events/upcoming?`
-			API_URL += `state_association_key=${key}&amp;`
-			API_URL += `card=true&amp;`
-			API_URL += `size=500&amp;`
+			API_URL += `state_association_key=${key}&`
+			API_URL += `card=true&`
+			API_URL += `size=50&`
 			API_URL += `start=0`;
 
 		if (this.state.startDate) {
 			let startDate = new Date(this.state.startDate).toISOString();
-			API_URL += `&amp;from=${startDate}`;
+			API_URL += `&from=${startDate}`;
 		}
 
 		if (this.state.endDate) {
 			let endDate = new Date(this.state.endDate).toISOString();
-			API_URL += `&amp;to=${endDate}`;
+			API_URL += `&to=${endDate}`;
 		}
 
 
@@ -99,8 +99,6 @@ class EventTable extends React.Component {
 		function extractData(events) {
 			events = events || [];
 			return [].concat(events.map(e => {
-				const isSportEvent = e.level && e.sport;
-
 				let subheadline = '';
 				const teams = e.teams || [];
 				for (let i=0, iLen = teams.length; i < iLen; i++) {
@@ -113,9 +111,9 @@ class EventTable extends React.Component {
 
 				return {
 					key: e.key,
-					headline: isSportEvent ? `${e.level} ${e.sport}` : e.activity_name,
-					subheadline: subheadline,
-					date: e.local_start_time
+					headline: e.headline,
+					subheadline: e.subheadline || subheadline,
+					date: e.date || e.local_start_time
 				}
 			}));
 		}
@@ -127,26 +125,41 @@ class EventTable extends React.Component {
 		let rows = items;
 
 		return isLoaded ? (
-			<div style={{ width: '100%' }}>
-				<div style={{ display: 'flex' }}>
-					<div>
-						<InputLabel style={{
-								width: '200px'
-							}}>
-								State Association
-						</InputLabel>
+			<div style={{
+				width: '100%',
+				display: 'flex',
+				flexDirection: 'column'
+			}}>
+				<div style={{
+					display: 'flex',
+					flexDirection: 'column',
+					marginBottom: '8px',
+					alignItems: 'center'
+				}}>
 
-						<Select
-							id="association"
-							value={this.state.association}
-							onChange={this._handleAssociationChange}
-							style={{
-								width: '200px'
-							}}>
-							<MenuItem value='18bad24aaa'>GHSA</MenuItem>
-							<MenuItem value='542bc38f95'>THSA</MenuItem>
-						</Select>
-					</div>
+					<InputLabel style={{
+							width: '200px'
+						}}>
+							State Association
+					</InputLabel>
+
+					<Select
+						id="association"
+						value={this.state.association}
+						onChange={this._handleAssociationChange}
+						style={{
+							width: '200px'
+						}}>
+						<MenuItem value='18bad24aaa'>GHSA</MenuItem>
+						<MenuItem value='542bc38f95'>THSA</MenuItem>
+					</Select>
+				</div>
+				<div style={{
+					display: 'flex',
+					marginBottom: '8px',
+					justifyContent: 'center',
+					flexDirection: 'row'
+				}}>
 					<TextField
 						id="startDate"
 						display="flex"
@@ -168,30 +181,34 @@ class EventTable extends React.Component {
 						}}
 					/>
 				</div>
-				<TableContainer component={Paper} display="flex">
-					<Table aria-label="simple table">
-					<TableHead>
-						<TableRow>
-							<TableCell>Key</TableCell>
-							<TableCell align="right">Headline</TableCell>
-							<TableCell align="right">Subheadline</TableCell>
-							<TableCell align="right">Date</TableCell>
-						</TableRow>
-					</TableHead>
-					<TableBody>
-						{rows.map((row) => (
-							<TableRow key={row.key}>
-								<TableCell component="th" scope="row">
-									{row.key}
-								</TableCell>
-								<TableCell align="right">{row.headline}</TableCell>
-								<TableCell align="right">{row.subheadline}</TableCell>
-								<TableCell align="right">{row.date}</TableCell>
+				<div style={{
+					padding: '4px'
+				}}>
+					<TableContainer component={Paper} display="flex">
+						<Table aria-label="simple table">
+						<TableHead>
+							<TableRow>
+								<TableCell>Key</TableCell>
+								<TableCell align="right">Headline</TableCell>
+								<TableCell align="right">Subheadline</TableCell>
+								<TableCell align="right">Date</TableCell>
 							</TableRow>
-						))}
-					</TableBody>
-					</Table>
-				</TableContainer>
+						</TableHead>
+						<TableBody>
+							{rows.map((row) => (
+								<TableRow key={row.key}>
+									<TableCell component="th" scope="row">
+										{row.key}
+									</TableCell>
+									<TableCell align="right">{row.headline}</TableCell>
+									<TableCell align="right">{row.subheadline}</TableCell>
+									<TableCell align="right">{new Date(row.date).toLocaleString()}</TableCell>
+								</TableRow>
+							))}
+						</TableBody>
+						</Table>
+					</TableContainer>
+				</div>
 			</div>
 			) : ( <CircularProgress />)
 	}
